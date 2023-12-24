@@ -34,6 +34,8 @@ final class MovieDetailViewController: UIViewController {
 }
 
 extension MovieDetailViewController: MovieDetailDelegate {
+    var categoriesCollectionViewDataSource: UICollectionViewDataSource? { presenter?.categoriesCollectionViewDataSource }
+    
     var selectedMovie: Movie? { presenter?.selectedMovie }
     
     func goBack() {

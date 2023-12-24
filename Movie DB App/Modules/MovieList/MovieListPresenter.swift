@@ -117,23 +117,6 @@ extension DefaultMovieListPresenter: MovieListPresenter {
         }
     }
     
-    func getGenres() {
-        networkManager?.getGenres() { [weak self] result in
-            guard let self, let vc = _viewController else { return }
-            switch result {
-            case .success(let genreList):
-                guard let genres = genreList.genres else { return }
-                self._genres.append(contentsOf: genres)
-                DispatchQueue.main.asyncIfRequired {
-                    vc.movieListView?.categoriesCollectionView.reloadData()
-                }
-            case .failure(let error):
-                // TODO: Show error
-                debugPrint("error -> \(error.localizedDescription)")
-            }
-        }
-    }
-    
     func getImageFrom(_ path: String?, imageView: UIImageView) {
         guard let path else { return }
         let indicator = addIndicatorToView(imageView)
@@ -176,6 +159,23 @@ extension DefaultMovieListPresenter: MovieListPresenter {
 }
 
 private extension DefaultMovieListPresenter {
+    
+    func getGenres() {
+        networkManager?.getGenres() { [weak self] result in
+            guard let self, let vc = _viewController else { return }
+            switch result {
+            case .success(let genreList):
+                guard let genres = genreList.genres else { return }
+                self._genres.append(contentsOf: genres)
+                DispatchQueue.main.asyncIfRequired {
+                    vc.movieListView?.categoriesCollectionView.reloadData()
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error -> \(error.localizedDescription)")
+            }
+        }
+    }
     
     private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
         let activityIndicator = UIActivityIndicatorView()

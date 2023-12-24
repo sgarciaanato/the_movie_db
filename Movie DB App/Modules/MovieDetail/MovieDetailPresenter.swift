@@ -8,7 +8,9 @@
 import UIKit
 
 protocol MovieDetailPresenter: AnyObject {
+    var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
     var selectedMovie: Movie { get }
+    var genres: [Genre]? { get }
     func viewDidLoad()
     func goBack()
 }
@@ -17,6 +19,8 @@ final class DefaultMovieDetailPresenter: Presenter, Coordinating {
     var coordinator: Coordinator?
     var networkManager: MovieDetailNetworkManager?
     var _selectedMovie: Movie
+    var _allCategories: [Genre]?
+    var _categoriesCollectionViewDataSource: MovieDetailCategoriesCollectionViewDataSource?
     
     var _viewController: MovieDetailViewController?
     var viewController: UIViewController {
@@ -32,6 +36,9 @@ final class DefaultMovieDetailPresenter: Presenter, Coordinating {
         self.coordinator = coordinator
         self.networkManager = MovieDetailNetworkManager()
         self._selectedMovie = movie
+        self._categoriesCollectionViewDataSource = MovieDetailCategoriesCollectionViewDataSource()
+        self._categoriesCollectionViewDataSource?.presenter = self
+        getGenres()
     }
 }
 
@@ -65,6 +72,25 @@ private extension DefaultMovieDetailPresenter {
         })
     }
     
+    func getGenres() {
+        networkManager?.getGenres() { [weak self] result in
+            guard let self, let vc = _viewController else { return }
+            switch result {
+            case .success(let genreList):
+                guard let genres = genreList.genres else { return }
+                self._allCategories = genres.filter { genre in
+                    self._selectedMovie.genreIds?.contains(where: { $0 == genre.id }) ?? false
+                }
+                DispatchQueue.main.asyncIfRequired {
+                    vc.movieDetailView?.categoriesCollectionView.reloadData()
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error -> \(error.localizedDescription)")
+            }
+        }
+    }
+    
     private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +119,13 @@ private extension DefaultMovieDetailPresenter {
 }
 
 extension DefaultMovieDetailPresenter: MovieDetailPresenter {
+    var categoriesCollectionViewDataSource: UICollectionViewDataSource? { _categoriesCollectionViewDataSource }
+    
     var selectedMovie: Movie { _selectedMovie }
+    
+    var genres: [Genre]? {
+        return _allCategories
+    }
     
     func viewDidLoad() {
         configureBackdropImage()

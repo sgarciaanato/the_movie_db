@@ -25,4 +25,16 @@ final class MovieDetailNetworkManager: NetworkManager {
             completionHandler(.failure(MovieDetailNetworkError.noData as Error))
         }
     }
+    
+    func getGenres(completionHandler: @escaping (Result<GenreList, MovieListNetworkError>) -> Void) {
+        self.performGet(withEndpoint: Endpoint.genreList.rawValue, parameters: [:]) { data, error in
+            do {
+                let genres = try JSONDecoder().decode(GenreList.self, from: data)
+                completionHandler(.success(genres))
+            } catch {
+                debugPrint(error)
+                completionHandler(.failure(.errorDecoding))
+            }
+        }
+    }
 }

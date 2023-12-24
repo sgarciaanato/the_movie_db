@@ -8,6 +8,8 @@
 import UIKit
 
 protocol MovieDetailDelegate: NSObject {
+    var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
+    
     var selectedMovie: Movie? { get }
     func goBack()
 }
@@ -45,6 +47,19 @@ final class MovieDetailView: UIView {
         return label
     }()
     
+    lazy var categoriesCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.estimatedItemSize = CGSize(width: 100, height: 32)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .clear
+        collectionView.register(CategoryCellView.self, forCellWithReuseIdentifier: "CategoryCellView")
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 29, bottom: 0, right: 29)
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+    
     lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -80,6 +95,7 @@ final class MovieDetailView: UIView {
         configureBackdropImageView()
         configurePosterImageView()
         configureTitleLabel()
+        configureCategories()
         
         configureBackButton()
         configureWatchListButton()
@@ -126,6 +142,18 @@ private extension MovieDetailView {
             movieTitleLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: 12),
             movieTitleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -29),
             movieTitleLabel.bottomAnchor.constraint(equalTo: posterImageView.bottomAnchor),
+        ])
+    }
+    
+    func configureCategories() {
+        categoriesCollectionView.dataSource = delegate?.categoriesCollectionViewDataSource
+        addSubview(categoriesCollectionView)
+        
+        NSLayoutConstraint.activate([
+            categoriesCollectionView.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: 18),
+            categoriesCollectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            categoriesCollectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            categoriesCollectionView.heightAnchor.constraint(equalToConstant: 32)
         ])
     }
     
