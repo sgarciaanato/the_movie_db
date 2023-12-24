@@ -170,6 +170,7 @@ extension MovieDescriptionView: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate {
             scrollView.isScrollEnabled = false
+            scrollView.decelerationRate = .init(rawValue: 0.1)
             return
         }
         fixScrollPosition(for: scrollView)
@@ -178,5 +179,6 @@ extension MovieDescriptionView: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         fixScrollPosition(for: scrollView)
         scrollView.isScrollEnabled = true
+        scrollView.decelerationRate = .init(rawValue: 1)
     }
 }
