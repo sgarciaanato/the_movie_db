@@ -9,6 +9,7 @@ import UIKit
 
 final class MovieDetailViewController: UIViewController {
     var presenter: MovieDetailPresenter?
+    var movieDetailView: MovieDetailView?
     
     init(presenter: MovieDetailPresenter) {
         self.presenter = presenter
@@ -19,7 +20,18 @@ final class MovieDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        super.loadView()
+        movieDetailView = MovieDetailView(delegate: self)
+        view = movieDetailView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter?.viewDidLoad()
     }
+}
+
+extension MovieDetailViewController: MoveDetailDelegate {
+    
 }

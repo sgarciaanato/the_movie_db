@@ -13,13 +13,14 @@ final class MainCoordinator: Coordinator {
     init() {
         self.navigationController = UINavigationController()
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor(named: "WhiteColor") ?? .white]
+        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor(named: "TextColor") ?? .white]
+        navigationController?.navigationBar.isHidden = true
     }
     
     func performAction(_ action: Action) {
         switch action {
-        case .openMovie:
-            let presenter: Presenter & Coordinating = DefaultMovieDetailPresenter(coordinator: self)
+        case .openMovie(let movie):
+            let presenter: Presenter & Coordinating = DefaultMovieDetailPresenter(coordinator: self, movie: movie)
             navigationController?.pushViewController(presenter.viewController, animated: true)
         }
     }

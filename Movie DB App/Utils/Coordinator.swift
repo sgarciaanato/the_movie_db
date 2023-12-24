@@ -8,7 +8,7 @@
 import UIKit
 
 enum Action {
-    case openMovie
+    case openMovie(movie: Movie)
 }
 
 protocol Coordinator {

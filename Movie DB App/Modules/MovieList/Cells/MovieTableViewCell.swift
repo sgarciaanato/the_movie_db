@@ -23,7 +23,7 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.text = "Title:"
         label.font = UIFont.systemFont(ofSize: 15.0)
         return label
@@ -32,7 +32,7 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var movieTitleLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 15.0)
         return label
     }()
@@ -40,7 +40,7 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var releaseDateLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.text = "Release Date:"
         label.font = UIFont.systemFont(ofSize: 15.0)
         return label
@@ -49,7 +49,7 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var movieReleaseDateLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 15.0)
         return label
     }()
@@ -57,7 +57,7 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var averageRatingLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.text = "Average Rating:"
         label.font = UIFont.systemFont(ofSize: 15.0)
         return label
@@ -66,8 +66,31 @@ final class MovieTableViewCell: UITableViewCell {
     private lazy var movieAverageRatingLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 15.0)
+        return label
+    }()
+    
+    private lazy var movieWatchListImageView: UIImageView = {
+        var imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private lazy var popularityImageView: UIImageView = {
+        var imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private lazy var popularityLabel: UILabel = {
+        var label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(named: "TextColor")
+        label.font = UIFont.systemFont(ofSize: 15.0)
+        label.text = "na"
         return label
     }()
     
@@ -90,6 +113,8 @@ extension MovieTableViewCell {
         configureTitleLabel()
         configureReleaseDateLabel()
         configureAverageRatingLabel()
+        configureWatchListImageView()
+        configurePopularity()
     }
     
     func configureImageView() {
@@ -113,10 +138,8 @@ extension MovieTableViewCell {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: movieImageView.topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             movieTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            movieTitleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            movieTitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            movieTitleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22)
         ])
     }
     
@@ -129,10 +152,8 @@ extension MovieTableViewCell {
         NSLayoutConstraint.activate([
             releaseDateLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: 5),
             releaseDateLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            releaseDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             movieReleaseDateLabel.topAnchor.constraint(equalTo: releaseDateLabel.bottomAnchor),
-            movieReleaseDateLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            movieReleaseDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            movieReleaseDateLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22)
         ])
     }
     
@@ -146,10 +167,49 @@ extension MovieTableViewCell {
         NSLayoutConstraint.activate([
             averageRatingLabel.topAnchor.constraint(equalTo: movieReleaseDateLabel.bottomAnchor, constant: 5),
             averageRatingLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            averageRatingLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             movieAverageRatingLabel.topAnchor.constraint(equalTo: averageRatingLabel.bottomAnchor),
             movieAverageRatingLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 22),
-            movieAverageRatingLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+        ])
+    }
+    
+    func configureWatchListImageView() {
+        contentView.addSubview(movieWatchListImageView)
+        movieWatchListImageView.image = UIImage(named: "Bookmark")
+        
+        NSLayoutConstraint.activate([
+            movieWatchListImageView.topAnchor.constraint(equalTo: movieImageView.topAnchor),
+            movieWatchListImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -29),
+            movieWatchListImageView.heightAnchor.constraint(equalToConstant: 24),
+            movieWatchListImageView.widthAnchor.constraint(equalToConstant: 24),
+            
+            titleLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8),
+            movieTitleLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8),
+            releaseDateLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8),
+            movieReleaseDateLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8),
+            averageRatingLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8),
+            movieAverageRatingLabel.trailingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor, constant: -8)
+        ])
+    }
+    
+    func configurePopularity() {
+        contentView.addSubview(popularityImageView)
+        contentView.addSubview(popularityLabel)
+        
+        popularityImageView.image = movie.popularity != nil ? UIImage(named: "StarCheck") : UIImage(named: "Star")
+        
+        if let popularity = movie.popularity {
+            popularityLabel.textColor = UIColor(named: "TintColor")
+            popularityLabel.text = String(format: "%.1f", popularity)
+        }
+        
+        NSLayoutConstraint.activate([
+            popularityImageView.topAnchor.constraint(equalTo: movieWatchListImageView.bottomAnchor, constant: 18),
+            popularityImageView.leadingAnchor.constraint(equalTo: movieWatchListImageView.leadingAnchor),
+            popularityImageView.heightAnchor.constraint(equalToConstant: 24),
+            popularityImageView.widthAnchor.constraint(equalToConstant: 24),
+            
+            popularityLabel.topAnchor.constraint(equalTo: popularityImageView.bottomAnchor, constant: 3),
+            popularityLabel.centerXAnchor.constraint(equalTo: popularityImageView.centerXAnchor)
         ])
     }
 }

@@ -46,7 +46,7 @@ final class CategoryCellView: UICollectionViewCell {
     
     func configure(with genre: Genre, selected: Genre?) {
         let isSelected = genre == selected
-        label.textColor = isSelected ? UIColor(named: "BackgroundColor") : UIColor(named: "WhiteColor")
+        label.textColor = isSelected ? UIColor(named: "BackgroundColor") : UIColor(named: "TextColor")
         containerView.backgroundColor = isSelected ? UIColor(named: "TintColor") : .white.withAlphaComponent(0.1)
         label.text = genre.name
     }

@@ -12,11 +12,13 @@ protocol MovieListPresenter: AnyObject {
     var tableViewDataSource: UITableViewDataSource? { get }
     var categoriesCollectionViewDelegate: UICollectionViewDelegate? { get }
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
+    var movieList: MovieList? { get }
     var genres: [Genre] { get }
     var selectedGenre: Genre? { get set }
     
     func performAction(_ action: Action)
     func getImageFrom(_ path: String?, imageView: UIImageView)
+    func loadMore()
 }
 
 final class DefaultMovieListPresenter: Presenter, Coordinating {
@@ -26,6 +28,11 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
     var _tableViewDataSource: MovieListTableViewDataSource?
     var _categoriesCollectionViewDelegate: CategoriesCollectionViewDelegate?
     var _categoriesCollectionViewDataSource: CategoriesCollectionViewDataSource?
+    var loadingMore = false
+    var page: Int = 1
+    
+    var _movieList: MovieList?
+    
     var _genres: [Genre] = [
         Genre(id: nil, endpoint: "/3/movie/now_playing", name: "Now Playing"),
         Genre(id: nil, endpoint: "/3/movie/popular", name: "Popular"),
@@ -34,7 +41,7 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
     ]
     var _selectedGenre: Genre? {
         didSet {
-            getMovies(genre: _selectedGenre)
+            getMovieList(genre: _selectedGenre)
         }
     }
     
@@ -53,13 +60,15 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
         self.networkManager = MovieListNetworkManager()
         self._tableViewDelegate = MovieListTableViewDelegate()
         self._tableViewDataSource = MovieListTableViewDataSource()
+        self._tableViewDelegate?.presenter = self
         self._tableViewDataSource?.presenter = self
         self._categoriesCollectionViewDelegate = CategoriesCollectionViewDelegate()
         self._categoriesCollectionViewDataSource = CategoriesCollectionViewDataSource()
         self._categoriesCollectionViewDataSource?.presenter = self
         self._categoriesCollectionViewDelegate?.presenter = self
         self._selectedGenre = genres.first
-        getMovies(genre: self._selectedGenre)
+        getMovieList(genre: self._selectedGenre)
+        getGenres()
     }
 }
 
@@ -73,26 +82,50 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { _categoriesCollectionViewDataSource }
     
+    var movieList: MovieList? { _movieList }
+    
     var genres: [Genre] { _genres }
     
     var selectedGenre: Genre? {
         get { _selectedGenre }
-        set { _selectedGenre = newValue }
+        set {
+            page = 1
+            _selectedGenre = newValue
+            guard let vc = _viewController else { return }
+            vc.movieListView?.movieListTableView.setContentOffset(.zero, animated: true)
+        }
     }
     
     func performAction(_ action: Action) {
         coordinator?.performAction(action)
     }
     
-    func getMovies(genre: Genre?) {
+    func getMovieList(genre: Genre?) {
         guard let genre else { return }
         networkManager?.getMovies(genre: genre) { [weak self] result in
             guard let self, let vc = _viewController else { return }
             switch result {
-            case .success(let movies):
-                self._tableViewDataSource?.movies = movies.results
+            case .success(let movieList):
+                self._movieList = movieList
                 DispatchQueue.main.asyncIfRequired {
                     vc.movieListView?.movieListTableView.reloadData()
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error -> \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func getGenres() {
+        networkManager?.getGenres() { [weak self] result in
+            guard let self, let vc = _viewController else { return }
+            switch result {
+            case .success(let genreList):
+                guard let genres = genreList.genres else { return }
+                self._genres.append(contentsOf: genres)
+                DispatchQueue.main.asyncIfRequired {
+                    vc.movieListView?.categoriesCollectionView.reloadData()
                 }
             case .failure(let error):
                 // TODO: Show error
@@ -120,6 +153,26 @@ extension DefaultMovieListPresenter: MovieListPresenter {
             }
         })
     }
+    
+    func loadMore() {
+        guard !loadingMore, let genre = _selectedGenre, page < movieList?.totalPages ?? 0 else { return }
+        loadingMore = true
+        page += 1
+        networkManager?.getMovies(genre: genre, page: page) { [weak self] result in
+            guard let self, let vc = _viewController else { return }
+            switch result {
+            case .success(let movieList):
+                self._movieList?.results.append(contentsOf: movieList.results)
+                DispatchQueue.main.asyncIfRequired {
+                    vc.movieListView?.movieListTableView.reloadData()
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error -> \(error.localizedDescription)")
+            }
+            self.loadingMore = false
+        }
+    }
 }
 
 private extension DefaultMovieListPresenter {
@@ -128,7 +181,7 @@ private extension DefaultMovieListPresenter {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.style = .large
-        activityIndicator.color = UIColor(named: "WhiteColor")
+        activityIndicator.color = UIColor(named: "TextColor")
         view.addSubview(activityIndicator)
         DispatchQueue.main.asyncIfRequired {
             activityIndicator.startAnimating()

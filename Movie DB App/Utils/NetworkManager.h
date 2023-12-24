@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NetworkManager : NSObject
 
-- (void)performGetWithEndpoint:(NSString *)endpoint completionHandler:(void (^)(NSData*, NSError*))completion;
+- (void)performGetWithEndpoint:(NSString *)endpoint parameters:(NSDictionary* __nullable)parameters completionHandler:(void (^)(NSData*, NSError*))completion;
 - (void)performGetResourceWithEndpoint:(NSString *)endpoint completionHandler:(void (^)(NSData* __nullable, NSError* __nullable))completion;
 
 @end

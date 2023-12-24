@@ -21,7 +21,7 @@ final class MovieListView: UIView {
     private lazy var searchDescriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 27)
         label.text = "Find your movies"
         return label
@@ -30,7 +30,7 @@ final class MovieListView: UIView {
     private lazy var categoriesTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(named: "WhiteColor")
+        label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 27)
         label.text = "Categories"
         return label
@@ -54,7 +54,6 @@ final class MovieListView: UIView {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
-    
     
     init(delegate: MovieListDelegate) {
         super.init(frame: .zero)

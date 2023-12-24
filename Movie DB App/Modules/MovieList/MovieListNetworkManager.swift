@@ -7,19 +7,46 @@
 
 import Foundation
 
-enum NetworkError: Error {
+enum MovieListNetworkError: Error {
     case errorDecoding
     case noData
 }
 
+enum Endpoint: String {
+    case genreList = "/3/genre/movie/list"
+    case discoverGenre = "/3/discover/movie"
+}
+
 final class MovieListNetworkManager: NetworkManager {
-    func getMovies(genre: Genre, completionHandler: @escaping (Result<MovieList, NetworkError>) -> Void) {
-        guard let endpoint = genre.endpoint else { return }
-        self.performGet(withEndpoint: endpoint) { data, error in
+    let genreListEndpoint = "/3/genre/movie/list"
+    
+    func getMovies(genre: Genre, page: Int? = nil, completionHandler: @escaping (Result<MovieList, MovieListNetworkError>) -> Void) {
+        let endpoint = genre.endpoint ?? Endpoint.discoverGenre.rawValue
+        var params: [String: String] = [:]
+        if let genreId = genre.id {
+            params["with_genres"] = "\(genreId)"
+        }
+        if let page {
+            params["page"] = "\(page)"
+        }
+        self.performGet(withEndpoint: endpoint, parameters: params) { data, error in
             do {
                 let movies = try JSONDecoder().decode(MovieList.self, from: data)
                 completionHandler(.success(movies))
             } catch {
+                debugPrint(error)
+                completionHandler(.failure(.errorDecoding))
+            }
+        }
+    }
+    
+    func getGenres(completionHandler: @escaping (Result<GenreList, MovieListNetworkError>) -> Void) {
+        self.performGet(withEndpoint: Endpoint.genreList.rawValue, parameters: [:]) { data, error in
+            do {
+                let genres = try JSONDecoder().decode(GenreList.self, from: data)
+                completionHandler(.success(genres))
+            } catch {
+                debugPrint(error)
                 completionHandler(.failure(.errorDecoding))
             }
         }
@@ -35,7 +62,7 @@ final class MovieListNetworkManager: NetworkManager {
                 completionHandler(.success(data))
                 return
             }
-            completionHandler(.failure(NetworkError.noData as Error))
+            completionHandler(.failure(MovieListNetworkError.noData as Error))
         }
     }
 }
