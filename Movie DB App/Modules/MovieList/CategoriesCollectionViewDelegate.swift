@@ -14,7 +14,6 @@ final class CategoriesCollectionViewDelegate: NSObject, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let genre = presenter?.genres[indexPath.row], genre != presenter?.selectedGenre else { return }
         presenter?.selectedGenre = genre
-        collectionView.reloadItems(at: [selectedIndexPath ?? IndexPath(row: 0, section: 0), indexPath])
         selectedIndexPath = indexPath
         collectionView.reloadData()
     }

@@ -7,12 +7,16 @@
 
 import UIKit
 
-protocol MoveDetailDelegate: NSObject {
-    
+protocol MovieDetailDelegate: NSObject {
+    var selectedMovie: Movie? { get }
+    func goBack()
 }
 
 final class MovieDetailView: UIView {
-    weak var delegate: MoveDetailDelegate?
+    weak var delegate: MovieDetailDelegate?
+    var added: Bool {
+        WatchList.shared.movies.contains { $0.id == delegate?.selectedMovie?.id }
+    }
     
     lazy var backdropImageView: UIImageView = {
         let imageView = UIImageView()
@@ -30,12 +34,57 @@ final class MovieDetailView: UIView {
         return imageView
     }()
     
-    init(delegate: MoveDetailDelegate) {
+    lazy var movieTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 27)
+        label.textColor = UIColor(named: "TextColor")
+        label.numberOfLines = 0
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+        return label
+    }()
+    
+    lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Back", for: .normal)
+        let backArrowImage = UIImage(systemName: "arrow.backward")?.withRenderingMode(.alwaysTemplate)
+        button.setImage(backArrowImage, for: .normal)
+        button.tintColor = UIColor(named: "TextColor")
+        button.setTitleColor(UIColor(named: "TextColor"), for: .normal)
+        button.addTarget(self, action: #selector(goBack), for: .touchUpInside)
+        button.clipsToBounds = true
+        button.imageEdgeInsets.right = 12
+        button.backgroundColor = UIColor(named: "LightColor")
+        button.layer.cornerRadius = 16
+        return button
+    }()
+    
+    lazy var watchListButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(toggleWatchList), for: .touchUpInside)
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 16
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
+        button.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        return button
+    }()
+    
+    init(delegate: MovieDetailDelegate) {
         super.init(frame: .zero)
         self.delegate = delegate
         self.backgroundColor = UIColor(named: "BackgroundColor")
         configureBackdropImageView()
         configurePosterImageView()
+        configureTitleLabel()
+        
+        configureBackButton()
+        configureWatchListButton()
+        
+        configureWatchListAppearance()
     }
     
     required init?(coder: NSCoder) {
@@ -65,5 +114,60 @@ private extension MovieDetailView {
             
             posterImageView.centerYAnchor.constraint(equalTo: backdropImageView.bottomAnchor)
         ])
+    }
+    
+    func configureTitleLabel() {
+        addSubview(movieTitleLabel)
+        
+        movieTitleLabel.text = delegate?.selectedMovie?.title
+        
+        NSLayoutConstraint.activate([
+            movieTitleLabel.topAnchor.constraint(equalTo: backdropImageView.bottomAnchor, constant: 12),
+            movieTitleLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: 12),
+            movieTitleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -29),
+            movieTitleLabel.bottomAnchor.constraint(equalTo: posterImageView.bottomAnchor),
+        ])
+    }
+    
+    func configureBackButton() {
+        addSubview(backButton)
+        
+        NSLayoutConstraint.activate([
+            backButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 29),
+            backButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 12),
+            backButton.heightAnchor.constraint(equalToConstant: 42),
+            backButton.widthAnchor.constraint(equalToConstant: 102)
+        ])
+    }
+    
+    func configureWatchListButton() {
+        addSubview(watchListButton)
+        
+        NSLayoutConstraint.activate([
+            watchListButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32),
+            watchListButton.bottomAnchor.constraint(equalTo: backButton.bottomAnchor),
+            watchListButton.heightAnchor.constraint(equalToConstant: 42),
+            watchListButton.widthAnchor.constraint(equalToConstant: 42)
+        ])
+    }
+    
+    func configureWatchListAppearance() {
+        let backArrowImage = added ? UIImage(named: "BookmarkCheckNegative") : UIImage(named: "Bookmark")
+        watchListButton.setImage(backArrowImage, for: .normal)
+        watchListButton.backgroundColor = added ? UIColor(named: "TintColor") : UIColor(named: "LightColor")
+    }
+    
+    @objc func goBack() {
+        delegate?.goBack()
+    }
+    
+    @objc func toggleWatchList() {
+        if added {
+            WatchList.shared.removeMovie(movie: delegate?.selectedMovie)
+        } else {
+            WatchList.shared.addMovie(movie: delegate?.selectedMovie)
+        }
+        debugPrint(WatchList.shared.movies.count)
+        configureWatchListAppearance()
     }
 }

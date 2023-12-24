@@ -12,8 +12,9 @@ final class MovieDetailViewController: UIViewController {
     var movieDetailView: MovieDetailView?
     
     init(presenter: MovieDetailPresenter) {
-        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.presenter = presenter
+        self.navigationItem.setHidesBackButton(true, animated: true)
     }
     
     required init?(coder: NSCoder) {
@@ -32,6 +33,10 @@ final class MovieDetailViewController: UIViewController {
     }
 }
 
-extension MovieDetailViewController: MoveDetailDelegate {
+extension MovieDetailViewController: MovieDetailDelegate {
+    var selectedMovie: Movie? { presenter?.selectedMovie }
     
+    func goBack() {
+        presenter?.goBack()
+    }
 }

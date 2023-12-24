@@ -14,7 +14,6 @@ final class MainCoordinator: Coordinator {
         self.navigationController = UINavigationController()
         self.navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor(named: "TextColor") ?? .white]
-        navigationController?.navigationBar.isHidden = true
     }
     
     func performAction(_ action: Action) {
@@ -22,6 +21,11 @@ final class MainCoordinator: Coordinator {
         case .openMovie(let movie):
             let presenter: Presenter & Coordinating = DefaultMovieDetailPresenter(coordinator: self, movie: movie)
             navigationController?.pushViewController(presenter.viewController, animated: true)
+        case .goBack:
+            navigationController?.popViewController(animated: true)
+        case .openWatchList:
+            let presenter: Presenter & Coordinating = DefaultWatchListPresenter(coordinator: self)
+            self.navigationController?.pushViewController(presenter.viewController, animated: true)
         }
     }
     

@@ -1,52 +1,51 @@
 //
-//  MovieDetailPresenter.swift
+//  WatchListPresenter.swift
 //  Movie DB App
 //
-//  Created by Trece on 22-12-23.
+//  Created by Samuel on 24-12-23.
 //
 
 import UIKit
 
-protocol MovieDetailPresenter: AnyObject {
-    var selectedMovie: Movie { get }
-    func viewDidLoad()
-    func goBack()
+protocol WatchListPresenter: AnyObject {
+    var tableViewDelegate: UITableViewDelegate? { get }
+    var tableViewDataSource: UITableViewDataSource? { get }
+    func performAction(_ action: Action)
+    func getImageFrom(_ path: String?, imageView: UIImageView)
 }
 
-final class DefaultMovieDetailPresenter: Presenter, Coordinating {
+final class DefaultWatchListPresenter: Presenter, Coordinating {
     var coordinator: Coordinator?
-    var networkManager: MovieDetailNetworkManager?
-    var _selectedMovie: Movie
+    var networkManager: MovieListNetworkManager?
+    var _tableViewDelegate: WatchListTableViewDelegate?
+    var _tableViewDataSource: WatchListTableViewDataSource?
     
-    var _viewController: MovieDetailViewController?
+    var _viewController: WatchListViewController?
     var viewController: UIViewController {
         if let _viewController {
             return _viewController
         }
-        let vc = MovieDetailViewController(presenter: self)
+        let vc = WatchListViewController(presenter: self)
         _viewController = vc
         return vc
     }
     
-    init(coordinator: Coordinator? = nil, movie: Movie) {
+    init(coordinator: Coordinator? = nil) {
         self.coordinator = coordinator
-        self.networkManager = MovieDetailNetworkManager()
-        self._selectedMovie = movie
+        self.networkManager = MovieListNetworkManager()
+        self._tableViewDelegate = WatchListTableViewDelegate()
+        self._tableViewDataSource = WatchListTableViewDataSource()
+        self._tableViewDelegate?.presenter = self
+        self._tableViewDataSource?.presenter = self
     }
 }
 
-private extension DefaultMovieDetailPresenter {
-    func configureBackdropImage() {
-        guard let path = _selectedMovie.backdropPath, let imageView = _viewController?.movieDetailView?.backdropImageView else { return }
-        getImageFrom(path, imageView: imageView)
-    }
-    
-    func configurePosterImage() {
-        guard let path = _selectedMovie.posterPath, let imageView = _viewController?.movieDetailView?.posterImageView else { return }
-        getImageFrom(path, imageView: imageView)
-    }
-    
-    func getImageFrom(_ path: String, imageView: UIImageView) {
+private extension DefaultWatchListPresenter {
+}
+
+extension DefaultWatchListPresenter: WatchListPresenter {
+    func getImageFrom(_ path: String?, imageView: UIImageView) {
+        guard let path else { return }
         let indicator = addIndicatorToView(imageView)
         networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
             if let self {
@@ -64,6 +63,17 @@ private extension DefaultMovieDetailPresenter {
             }
         })
     }
+    
+    var tableViewDelegate: UITableViewDelegate? { _tableViewDelegate }
+    
+    var tableViewDataSource: UITableViewDataSource? { _tableViewDataSource }
+    
+    func performAction(_ action: Action) {
+        coordinator?.performAction(action)
+    }
+}
+
+private extension DefaultWatchListPresenter {
     
     private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
         let activityIndicator = UIActivityIndicatorView()
@@ -89,18 +99,5 @@ private extension DefaultMovieDetailPresenter {
             indicator.superview?.alpha = 1
             indicator.removeFromSuperview()
         }
-    }
-}
-
-extension DefaultMovieDetailPresenter: MovieDetailPresenter {
-    var selectedMovie: Movie { _selectedMovie }
-    
-    func viewDidLoad() {
-        configureBackdropImage()
-        configurePosterImage()
-    }
-    
-    func goBack() {
-        coordinator?.performAction(.goBack)
     }
 }

@@ -9,6 +9,8 @@ import UIKit
 
 enum Action {
     case openMovie(movie: Movie)
+    case openWatchList
+    case goBack
 }
 
 protocol Coordinator {

@@ -12,7 +12,7 @@ protocol MovieListDelegate: AnyObject {
     var tableViewDataSource: UITableViewDataSource? { get }
     var categoriesCollectionViewDelegate: UICollectionViewDelegate? { get }
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
-    func didSelectMovie(_ movieID: Int)
+    func openWatchList()
 }
 
 final class MovieListView: UIView {
@@ -55,12 +55,36 @@ final class MovieListView: UIView {
         return tableView
     }()
     
+    lazy var openWatchListButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Watch List", for: .normal)
+        button.setImage(UIImage(named: "BookmarkNegative"), for: .normal)
+        button.setTitleColor(UIColor(named: "BackgroundColor"), for: .normal)
+        button.addTarget(self, action: #selector(openWatchList), for: .touchUpInside)
+        button.clipsToBounds = true
+        button.imageEdgeInsets.right = 12
+        button.backgroundColor = UIColor(named: "TintColor")
+        button.layer.cornerRadius = 16
+        // reverse image and title
+        button.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        button.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        button.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        return button
+    }()
+    
     init(delegate: MovieListDelegate) {
         super.init(frame: .zero)
         self.delegate = delegate
         configureSearchView()
         configureCategories()
         configureMovieList()
+        configureWatchListButton()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadList(notification:)), name: Notification.Name.watchListUpdated, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     required init?(coder: NSCoder) {
@@ -118,8 +142,28 @@ private extension MovieListView {
             movieListTableView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 18),
             movieListTableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             movieListTableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            movieListTableView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor ),
+            movieListTableView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             movieListTableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
         ])
+        movieListTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 21, right: 0)
+    }
+    
+    func configureWatchListButton() {
+        addSubview(openWatchListButton)
+        
+        NSLayoutConstraint.activate([
+            openWatchListButton.heightAnchor.constraint(equalToConstant: 42),
+            openWatchListButton.widthAnchor.constraint(equalToConstant: 134),
+            openWatchListButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -29),
+            openWatchListButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -31)
+        ])
+    }
+    
+    @objc func openWatchList() {
+        delegate?.openWatchList()
+    }
+    
+    @objc func reloadList(notification: Notification) {
+        movieListTableView.reloadData()
     }
 }

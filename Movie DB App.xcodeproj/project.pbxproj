@@ -35,6 +35,13 @@
 		605656FF2B36FD8800FA1FED /* DispatchQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605656FE2B36FD8800FA1FED /* DispatchQueue+Extensions.swift */; };
 		60F902312B3744E200DE58C7 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F902302B3744E200DE58C7 /* Genre.swift */; };
 		60F902332B37454400DE58C7 /* GenreList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F902322B37454400DE58C7 /* GenreList.swift */; };
+		7E82F7952B37E686003D9155 /* WatchListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E82F7942B37E686003D9155 /* WatchListPresenter.swift */; };
+		7E82F7972B37E6B0003D9155 /* WatchListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E82F7962B37E6B0003D9155 /* WatchListViewController.swift */; };
+		7E82F7992B37E781003D9155 /* WatchListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E82F7982B37E781003D9155 /* WatchListView.swift */; };
+		7E8C36252B37F3F100313F79 /* WatchList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8C36242B37F3F100313F79 /* WatchList.swift */; };
+		7E8C36272B37FDB400313F79 /* WatchListTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8C36262B37FDB400313F79 /* WatchListTableViewDelegate.swift */; };
+		7E8C36292B37FDC200313F79 /* WatchListTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8C36282B37FDC200313F79 /* WatchListTableViewDataSource.swift */; };
+		7E8C362B2B37FF7C00313F79 /* WatchListNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8C362A2B37FF7C00313F79 /* WatchListNetworkManager.swift */; };
 		7EA44ED72B378B9C00FC2EE9 /* MovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA44ED62B378B9C00FC2EE9 /* MovieDetailView.swift */; };
 		7EA44ED92B3797C200FC2EE9 /* MovieDetailNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA44ED82B3797C200FC2EE9 /* MovieDetailNetworkManager.swift */; };
 /* End PBXBuildFile section */
@@ -91,6 +98,13 @@
 		605656FE2B36FD8800FA1FED /* DispatchQueue+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+Extensions.swift"; sourceTree = "<group>"; };
 		60F902302B3744E200DE58C7 /* Genre.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Genre.swift; sourceTree = "<group>"; };
 		60F902322B37454400DE58C7 /* GenreList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreList.swift; sourceTree = "<group>"; };
+		7E82F7942B37E686003D9155 /* WatchListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListPresenter.swift; sourceTree = "<group>"; };
+		7E82F7962B37E6B0003D9155 /* WatchListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListViewController.swift; sourceTree = "<group>"; };
+		7E82F7982B37E781003D9155 /* WatchListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListView.swift; sourceTree = "<group>"; };
+		7E8C36242B37F3F100313F79 /* WatchList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchList.swift; sourceTree = "<group>"; };
+		7E8C36262B37FDB400313F79 /* WatchListTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListTableViewDelegate.swift; sourceTree = "<group>"; };
+		7E8C36282B37FDC200313F79 /* WatchListTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListTableViewDataSource.swift; sourceTree = "<group>"; };
+		7E8C362A2B37FF7C00313F79 /* WatchListNetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchListNetworkManager.swift; sourceTree = "<group>"; };
 		7EA44ED62B378B9C00FC2EE9 /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
 		7EA44ED82B3797C200FC2EE9 /* MovieDetailNetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailNetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -184,6 +198,7 @@
 		605656DF2B35DABE00FA1FED /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				7E82F7932B37E672003D9155 /* WatchList */,
 				605656E32B35DD2D00FA1FED /* MovieDetail */,
 				605656E02B35DAC600FA1FED /* MovieList */,
 			);
@@ -238,8 +253,22 @@
 				605656F62B36489000FA1FED /* MovieList.swift */,
 				60F902302B3744E200DE58C7 /* Genre.swift */,
 				60F902322B37454400DE58C7 /* GenreList.swift */,
+				7E8C36242B37F3F100313F79 /* WatchList.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		7E82F7932B37E672003D9155 /* WatchList */ = {
+			isa = PBXGroup;
+			children = (
+				7E82F7942B37E686003D9155 /* WatchListPresenter.swift */,
+				7E82F7962B37E6B0003D9155 /* WatchListViewController.swift */,
+				7E82F7982B37E781003D9155 /* WatchListView.swift */,
+				7E8C36262B37FDB400313F79 /* WatchListTableViewDelegate.swift */,
+				7E8C36282B37FDC200313F79 /* WatchListTableViewDataSource.swift */,
+				7E8C362A2B37FF7C00313F79 /* WatchListNetworkManager.swift */,
+			);
+			path = WatchList;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -373,6 +402,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E82F7952B37E686003D9155 /* WatchListPresenter.swift in Sources */,
 				605656DC2B35D6E400FA1FED /* Coordinator.swift in Sources */,
 				605656F92B3665B400FA1FED /* MovieListView.swift in Sources */,
 				601C1F632B37036E0088D2C2 /* MovieTableViewCell.swift in Sources */,
@@ -388,6 +418,8 @@
 				605656E22B35DAD900FA1FED /* MovieListViewController.swift in Sources */,
 				60F902332B37454400DE58C7 /* GenreList.swift in Sources */,
 				605656FF2B36FD8800FA1FED /* DispatchQueue+Extensions.swift in Sources */,
+				7E8C362B2B37FF7C00313F79 /* WatchListNetworkManager.swift in Sources */,
+				7E82F7992B37E781003D9155 /* WatchListView.swift in Sources */,
 				605656F02B35F25B00FA1FED /* Presenter.swift in Sources */,
 				605656DE2B35D80700FA1FED /* MainCoordinator.swift in Sources */,
 				6012636B2B373A0C00467027 /* CategoryCellView.swift in Sources */,
@@ -395,9 +427,13 @@
 				605656EE2B35EF7D00FA1FED /* MovieDetailPresenter.swift in Sources */,
 				605656AE2B35C48B00FA1FED /* SceneDelegate.swift in Sources */,
 				605656FB2B366E2B00FA1FED /* MovieListTableViewDelegate.swift in Sources */,
+				7E8C36272B37FDB400313F79 /* WatchListTableViewDelegate.swift in Sources */,
+				7E8C36292B37FDC200313F79 /* WatchListTableViewDataSource.swift in Sources */,
 				605656F72B36489100FA1FED /* MovieList.swift in Sources */,
 				605656EC2B35EF3A00FA1FED /* MovieListPresenter.swift in Sources */,
+				7E82F7972B37E6B0003D9155 /* WatchListViewController.swift in Sources */,
 				605656F22B36009900FA1FED /* MovieListNetworkManager.swift in Sources */,
+				7E8C36252B37F3F100313F79 /* WatchList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

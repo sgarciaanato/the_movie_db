@@ -15,7 +15,6 @@ final class MovieListViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         self.presenter = presenter
         title = "Movie DB App"
-        
     }
     
     required init?(coder: NSCoder) {
@@ -38,7 +37,7 @@ extension MovieListViewController: MovieListDelegate {
     
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { presenter?.categoriesCollectionViewDataSource }
     
-    func didSelectMovie(_ movieID: Int) {
-        debugPrint("Select \(movieID)")
-    }   
+    func openWatchList() {
+        presenter?.performAction(.openWatchList)
+    }
 }
