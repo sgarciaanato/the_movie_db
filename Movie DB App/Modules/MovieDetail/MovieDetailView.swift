@@ -60,6 +60,12 @@ final class MovieDetailView: UIView {
         return collectionView
     }()
     
+    lazy var movieDescriptionView: MovieDescriptionView = {
+        let movieDescriptionView = MovieDescriptionView()
+        movieDescriptionView.translatesAutoresizingMaskIntoConstraints = false
+        return movieDescriptionView
+    }()
+    
     lazy var backButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -96,6 +102,7 @@ final class MovieDetailView: UIView {
         configurePosterImageView()
         configureTitleLabel()
         configureCategories()
+        setUpMovieDescription()
         
         configureBackButton()
         configureWatchListButton()
@@ -157,6 +164,16 @@ private extension MovieDetailView {
         ])
     }
     
+    func setUpMovieDescription() {
+        addSubview(movieDescriptionView)
+        
+        NSLayoutConstraint.activate([
+            movieDescriptionView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 18),
+            movieDescriptionView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 29),
+            movieDescriptionView.trailingAnchor.constraint(equalTo: categoriesCollectionView.trailingAnchor, constant: -29)
+        ])
+    }
+    
     func configureBackButton() {
         addSubview(backButton)
         
@@ -164,7 +181,8 @@ private extension MovieDetailView {
             backButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 29),
             backButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 12),
             backButton.heightAnchor.constraint(equalToConstant: 42),
-            backButton.widthAnchor.constraint(equalToConstant: 102)
+            backButton.widthAnchor.constraint(equalToConstant: 102),
+            movieDescriptionView.bottomAnchor.constraint(equalTo: backButton.topAnchor, constant: -8)
         ])
     }
     
