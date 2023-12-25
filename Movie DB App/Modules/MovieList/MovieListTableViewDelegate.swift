@@ -16,7 +16,7 @@ final class MovieListTableViewDelegate: NSObject, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let selectedMovie = presenter?.movieList?.results[indexPath.row] else { return }
+        guard let selectedMovie = presenter?.movies[indexPath.row] else { return }
         presenter?.performAction(.openMovie(movie: selectedMovie))
     }
 }

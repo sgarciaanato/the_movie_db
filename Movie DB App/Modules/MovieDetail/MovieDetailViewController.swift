@@ -35,6 +35,7 @@ final class MovieDetailViewController: UIViewController {
 
 extension MovieDetailViewController: MovieDetailDelegate {
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { presenter?.categoriesCollectionViewDataSource }
+    var reviewsTableViewDataSource: UITableViewDataSource? { presenter?.reviewsTableViewDataSource }
     
     var selectedMovie: Movie? { presenter?.selectedMovie }
     

@@ -53,6 +53,8 @@ NSString * const apiKey = @"83124cd7f7e0998f78a774bf642fb2b7";
 {
     NSString *url = [[NSString alloc] initWithFormat:@"%@%@", resourcesURL, endpoint];
     
+    NSLog(@"(GET) -> %@", url);
+    
     NSMutableURLRequest *urlRequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
 
     //create the Method "GET"

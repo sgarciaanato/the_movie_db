@@ -5,8 +5,6 @@
 //  Created by Samuel on 24-12-23.
 //
 
-import Foundation
-
 extension Notification.Name {
     static let watchListUpdated = Notification.Name("WatchListUpdated")
 }

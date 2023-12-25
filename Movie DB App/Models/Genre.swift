@@ -5,9 +5,7 @@
 //  Created by Trece on 23-12-23.
 //
 
-import Foundation
-
-struct Genre: Decodable, Equatable {
+struct Genre: Codable, Equatable {
     let id: Int?
     let endpoint: String?
     let name: String?

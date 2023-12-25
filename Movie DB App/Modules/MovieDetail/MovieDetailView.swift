@@ -9,6 +9,7 @@ import UIKit
 
 protocol MovieDetailDelegate: NSObject {
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
+    var reviewsTableViewDataSource: UITableViewDataSource? { get }
     
     var selectedMovie: Movie? { get }
     func goBack()
@@ -57,11 +58,12 @@ final class MovieDetailView: UIView {
         collectionView.register(CategoryCellView.self, forCellWithReuseIdentifier: "CategoryCellView")
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 29, bottom: 0, right: 29)
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.allowsSelection = false
         return collectionView
     }()
     
     lazy var movieDescriptionView: MovieDescriptionView = {
-        let movieDescriptionView = MovieDescriptionView()
+        let movieDescriptionView = MovieDescriptionView(delegate: delegate)
         movieDescriptionView.translatesAutoresizingMaskIntoConstraints = false
         return movieDescriptionView
     }()
@@ -213,7 +215,6 @@ private extension MovieDetailView {
         } else {
             WatchList.shared.addMovie(movie: delegate?.selectedMovie)
         }
-        debugPrint(WatchList.shared.movies.count)
         configureWatchListAppearance()
     }
 }

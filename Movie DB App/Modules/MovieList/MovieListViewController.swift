@@ -29,6 +29,15 @@ final class MovieListViewController: UIViewController {
 }
 
 extension MovieListViewController: MovieListDelegate {
+    var searchText: String? {
+        get {
+            presenter?.searchText
+        }
+        set {
+            presenter?.searchText = newValue
+        }
+    }
+    
     var tableViewDelegate: UITableViewDelegate? { presenter?.tableViewDelegate }
     
     var tableViewDataSource: UITableViewDataSource? { presenter?.tableViewDataSource }

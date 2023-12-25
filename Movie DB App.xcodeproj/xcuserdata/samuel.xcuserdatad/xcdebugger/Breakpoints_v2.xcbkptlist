@@ -3,4 +3,94 @@
    uuid = "EBA04F89-0D3E-46EE-996E-3097FF5164D3"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.IDETestFailureBreakpoint">
+         <BreakpointContent
+            uuid = "61E3C3FC-0BA8-4188-B78A-A2FCCE4CE506"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            breakpointStackSelectionBehavior = "1">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "06498A8F-9926-435D-B2B5-BE7BCBD8FC17"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Movie DB App/Modules/MovieDetail/MovieDetailPresenter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
+            landmarkName = "getReviews()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "06498A8F-9926-435D-B2B5-BE7BCBD8FC17 - e253434ac1230d34"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Result&lt;Movie_DB_App.ReviewList, Movie_DB_App.MovieListNetworkError&gt;) -&gt; () in Movie_DB_App.DefaultMovieDetailPresenter.getReviews() -&gt; ()"
+                  moduleName = "Movie DB App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samuel/Documents/Projects/iOS/Movie%20DB%20App/Movie%20DB%20App/Modules/MovieDetail/MovieDetailPresenter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "108"
+                  endingLineNumber = "108"
+                  offsetFromSymbolStart = "564">
+               </Location>
+               <Location
+                  uuid = "06498A8F-9926-435D-B2B5-BE7BCBD8FC17 - fdc0be13edf8dbbf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in closure #1 (Swift.Result&lt;Movie_DB_App.ReviewList, Movie_DB_App.MovieListNetworkError&gt;) -&gt; () in Movie_DB_App.DefaultMovieDetailPresenter.getReviews() -&gt; ()"
+                  moduleName = "Movie DB App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samuel/Documents/Projects/iOS/Movie%20DB%20App/Movie%20DB%20App/Modules/MovieDetail/MovieDetailPresenter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "108"
+                  endingLineNumber = "108"
+                  offsetFromSymbolStart = "28">
+               </Location>
+               <Location
+                  uuid = "06498A8F-9926-435D-B2B5-BE7BCBD8FC17 - e253434ac1230dfa"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Result&lt;Movie_DB_App.ReviewList, Movie_DB_App.MovieListNetworkError&gt;) -&gt; () in Movie_DB_App.DefaultMovieDetailPresenter.getReviews() -&gt; ()"
+                  moduleName = "Movie DB App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samuel/Documents/Projects/iOS/Movie%20DB%20App/Movie%20DB%20App/Modules/MovieDetail/MovieDetailPresenter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "110"
+                  endingLineNumber = "110"
+                  offsetFromSymbolStart = "520">
+               </Location>
+               <Location
+                  uuid = "06498A8F-9926-435D-B2B5-BE7BCBD8FC17 - e253434ac1230d15"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Result&lt;Movie_DB_App.ReviewList, Movie_DB_App.MovieListNetworkError&gt;) -&gt; () in Movie_DB_App.DefaultMovieDetailPresenter.getReviews() -&gt; ()"
+                  moduleName = "Movie DB App"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samuel/Documents/Projects/iOS/Movie%20DB%20App/Movie%20DB%20App/Modules/MovieDetail/MovieDetailPresenter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "107"
+                  endingLineNumber = "107"
+                  offsetFromSymbolStart = "520">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

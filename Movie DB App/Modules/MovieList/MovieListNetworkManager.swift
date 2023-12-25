@@ -13,6 +13,8 @@ enum MovieListNetworkError: Error {
 }
 
 enum Endpoint: String {
+    case movieDetail = "/3/movie/%i"
+    case movieReviews = "/3/movie/%i/reviews"
     case genreList = "/3/genre/movie/list"
     case discoverGenre = "/3/discover/movie"
 }

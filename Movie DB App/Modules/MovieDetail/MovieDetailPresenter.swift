@@ -9,18 +9,22 @@ import UIKit
 
 protocol MovieDetailPresenter: AnyObject {
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
+    var reviewsTableViewDataSource: UITableViewDataSource? { get }
     var selectedMovie: Movie { get }
-    var genres: [Genre]? { get }
+    var genres: [Genre] { get }
+    var reviews: [Review] { get }
     func viewDidLoad()
     func goBack()
+    func getImageFrom(_ path: String?, imageView: UIImageView)
 }
 
 final class DefaultMovieDetailPresenter: Presenter, Coordinating {
     var coordinator: Coordinator?
     var networkManager: MovieDetailNetworkManager?
     var _selectedMovie: Movie
-    var _allCategories: [Genre]?
+    var _reviews: ReviewList?
     var _categoriesCollectionViewDataSource: MovieDetailCategoriesCollectionViewDataSource?
+    var _reviewsTableViewDataSource: ReviewsTableViewDataSource?
     
     var _viewController: MovieDetailViewController?
     var viewController: UIViewController {
@@ -38,7 +42,10 @@ final class DefaultMovieDetailPresenter: Presenter, Coordinating {
         self._selectedMovie = movie
         self._categoriesCollectionViewDataSource = MovieDetailCategoriesCollectionViewDataSource()
         self._categoriesCollectionViewDataSource?.presenter = self
-        getGenres()
+        self._reviewsTableViewDataSource = ReviewsTableViewDataSource()
+        self._reviewsTableViewDataSource?.presenter = self
+        getMovieDetail()
+        getReviews()
     }
 }
 
@@ -72,23 +79,40 @@ private extension DefaultMovieDetailPresenter {
         })
     }
     
-    func getGenres() {
-        networkManager?.getGenres() { [weak self] result in
-            guard let self, let vc = _viewController else { return }
+    func getMovieDetail() {
+        guard let movieID = selectedMovie.id else { return }
+        networkManager?.getMovieDetail(movieID: movieID, completionHandler: { [weak self] result in
+            guard let self else { return }
             switch result {
-            case .success(let genreList):
-                guard let genres = genreList.genres else { return }
-                self._allCategories = genres.filter { genre in
-                    self._selectedMovie.genreIds?.contains(where: { $0 == genre.id }) ?? false
-                }
+            case .success(let movie):
+                self._selectedMovie = movie
+                guard let vc = _viewController else { return }
                 DispatchQueue.main.asyncIfRequired {
                     vc.movieDetailView?.categoriesCollectionView.reloadData()
                 }
             case .failure(let error):
                 // TODO: Show error
-                debugPrint("error -> \(error.localizedDescription)")
+                debugPrint("error data -> \(error.localizedDescription)")
             }
-        }
+        })
+    }
+    
+    func getReviews() {
+        guard let movieID = selectedMovie.id else { return }
+        networkManager?.getReviews(movieID: movieID, completionHandler: { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let reviews):
+                self._reviews = reviews
+                guard let vc = _viewController else { return }
+                DispatchQueue.main.asyncIfRequired {
+                    vc.movieDetailView?.movieDescriptionView.reviewsView.reviewsTableView.reloadData()
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error data -> \(error.localizedDescription)")
+            }
+        })
     }
     
     private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
@@ -121,11 +145,13 @@ private extension DefaultMovieDetailPresenter {
 extension DefaultMovieDetailPresenter: MovieDetailPresenter {
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { _categoriesCollectionViewDataSource }
     
+    var reviewsTableViewDataSource: UITableViewDataSource? { _reviewsTableViewDataSource }
+    
     var selectedMovie: Movie { _selectedMovie }
     
-    var genres: [Genre]? {
-        return _allCategories
-    }
+    var genres: [Genre] { selectedMovie.genres ?? [] }
+    
+    var reviews: [Review] { _reviews?.results ?? [] }
     
     func viewDidLoad() {
         configureBackdropImage()
@@ -134,5 +160,25 @@ extension DefaultMovieDetailPresenter: MovieDetailPresenter {
     
     func goBack() {
         coordinator?.performAction(.goBack)
+    }
+    
+    func getImageFrom(_ path: String?, imageView: UIImageView) {
+        guard let path else { return }
+        let indicator = addIndicatorToView(imageView)
+        networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
+            if let self {
+                self.removeIndicator(indicator)
+            }
+            
+            switch result {
+            case .success(let data):
+                DispatchQueue.main.asyncIfRequired {
+                    imageView.image = UIImage(data: data)
+                }
+            case .failure(let error):
+                // TODO: Show error
+                debugPrint("error data -> \(error.localizedDescription)")
+            }
+        })
     }
 }

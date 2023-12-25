@@ -5,27 +5,27 @@
 //  Created by Trece on 22-12-23.
 //
 
-import Foundation
-
 struct Movie: Codable {
     let adult: Bool?
     let backdropPath: String?
+    let genres: [Genre]?
     let genreIds: [Int]?
     let id: Int?
     let originalLanguage: String?
     let originalTitle: String?
     let overview: String?
-    let popularity: Float?
+    let popularity: CGFloat?
     let posterPath: String?
     let releaseDate: String?
     let title: String?
     let video: Bool?
-    let voteAverage: Float?
+    let voteAverage: CGFloat?
     let voteCount: Int?
     
     enum CodingKeys: String, CodingKey {
         case adult
         case backdropPath = "backdrop_path"
+        case genres
         case genreIds = "genre_ids"
         case id
         case originalLanguage = "original_language"

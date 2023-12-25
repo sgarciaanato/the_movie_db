@@ -8,6 +8,7 @@
 import UIKit
 
 final class MovieDescriptionView: UIView {
+    weak var delegate: MovieDetailDelegate?
     
     lazy var aboutMovieButton: UIButton = {
         let button = UIButton()
@@ -35,6 +36,7 @@ final class MovieDescriptionView: UIView {
     }()
     
     var indicatorViewleadingConstraint: NSLayoutConstraint?
+    var contentOffset: CGFloat
     
     lazy var descriptionScrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -45,19 +47,21 @@ final class MovieDescriptionView: UIView {
     }()
     
     lazy var aboutMovieView: AboutMovieView = {
-        let view = AboutMovieView()
+        let view = AboutMovieView(movie: delegate?.selectedMovie)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     lazy var reviewsView: ReviewsView = {
-        let view = ReviewsView()
+        let view = ReviewsView(delegate: delegate)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(delegate: MovieDetailDelegate?) {
+        contentOffset = 0
+        super.init(frame: .zero)
+        self.delegate = delegate
         configureAboutMovieButton()
         configureReviewsButton()
         configureIndicatorView()
@@ -155,8 +159,11 @@ private extension MovieDescriptionView {
     }
     
     func fixScrollPosition(for scrollView: UIScrollView) {
-        let offsetPercentage = scrollView.contentOffset.x / scrollView.contentSize.width
-        scrollView.setContentOffset(offsetPercentage < 1/4 ? .zero : CGPoint(x: scrollView.frame.width, y: 0), animated: true)
+        if (contentOffset > scrollView.contentOffset.x && scrollView.contentOffset.x < scrollView.frame.width) || scrollView.contentOffset.x <= 0 {
+            scrollView.setContentOffset(.zero, animated: true)
+            return
+        }
+        scrollView.setContentOffset(CGPoint(x: scrollView.frame.width, y: 0), animated: true)
     }
 }
 
@@ -169,16 +176,16 @@ extension MovieDescriptionView: UIScrollViewDelegate {
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate {
-            scrollView.isScrollEnabled = false
+            contentOffset = scrollView.contentOffset.x
             scrollView.decelerationRate = .init(rawValue: 0.1)
             return
         }
-        fixScrollPosition(for: scrollView)
+        let offsetPercentage = scrollView.contentOffset.x / scrollView.contentSize.width
+        scrollView.setContentOffset(offsetPercentage < 1/4 ? .zero : CGPoint(x: scrollView.frame.width, y: 0), animated: true)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         fixScrollPosition(for: scrollView)
-        scrollView.isScrollEnabled = true
         scrollView.decelerationRate = .init(rawValue: 1)
     }
 }

@@ -1,13 +1,13 @@
 //
-//  MovieList.swift
+//  ReviewList.swift
 //  Movie DB App
 //
-//  Created by Trece on 22-12-23.
+//  Created by Samuel on 25-12-23.
 //
 
-class MovieList: Decodable {
+struct ReviewList: Decodable {
     let page: Int
-    var results: [Movie]
+    var results: [Review]
     let totalPages: Int
     let totalResults: Int
     
@@ -16,9 +16,5 @@ class MovieList: Decodable {
         case results
         case totalPages = "total_pages"
         case totalResults = "total_results"
-    }
-    
-    func addMovie(movie: Movie) {
-        results.append(movie)
     }
 }

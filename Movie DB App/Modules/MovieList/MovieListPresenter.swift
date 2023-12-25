@@ -12,9 +12,10 @@ protocol MovieListPresenter: AnyObject {
     var tableViewDataSource: UITableViewDataSource? { get }
     var categoriesCollectionViewDelegate: UICollectionViewDelegate? { get }
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
-    var movieList: MovieList? { get }
+    var movies: [Movie] { get }
     var genres: [Genre] { get }
     var selectedGenre: Genre? { get set }
+    var searchText: String? { get set }
     
     func performAction(_ action: Action)
     func getImageFrom(_ path: String?, imageView: UIImageView)
@@ -28,6 +29,7 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
     var _tableViewDataSource: MovieListTableViewDataSource?
     var _categoriesCollectionViewDelegate: CategoriesCollectionViewDelegate?
     var _categoriesCollectionViewDataSource: CategoriesCollectionViewDataSource?
+    var _searchText: String?
     var loadingMore = false
     var page: Int = 1
     
@@ -74,6 +76,19 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
 
 extension DefaultMovieListPresenter: MovieListPresenter {
     
+    var searchText: String? {
+        get {
+            _searchText
+        }
+        set {
+            _searchText = newValue
+            guard let vc = _viewController else { return }
+            DispatchQueue.main.asyncIfRequired {
+                vc.movieListView?.movieListTableView.reloadData()
+            }
+        }
+    }
+    
     var tableViewDelegate: UITableViewDelegate? { _tableViewDelegate }
     
     var tableViewDataSource: UITableViewDataSource? { _tableViewDataSource }
@@ -82,7 +97,18 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { _categoriesCollectionViewDataSource }
     
-    var movieList: MovieList? { _movieList }
+    var movies: [Movie] {
+        guard let movies = _movieList?.results else { return [] }
+        
+        if searchText == "" || searchText == nil {
+            return movies
+        }
+        
+        return movies.filter { movie in
+            guard let searchText = searchText else { return false }
+            return movie.title?.lowercased().range(of: searchText) != nil
+        }
+    }
     
     var genres: [Genre] { _genres }
     
@@ -103,13 +129,14 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     func getMovieList(genre: Genre?) {
         guard let genre else { return }
         networkManager?.getMovies(genre: genre) { [weak self] result in
-            guard let self, let vc = _viewController else { return }
+            guard let self, let tableView = _viewController?.movieListView?.movieListTableView else { return }
             switch result {
             case .success(let movieList):
                 self._movieList = movieList
                 DispatchQueue.main.asyncIfRequired {
-                    vc.movieListView?.movieListTableView.reloadData()
+                    tableView.reloadData()
                 }
+                return
             case .failure(let error):
                 // TODO: Show error
                 debugPrint("error -> \(error.localizedDescription)")
@@ -138,16 +165,56 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     }
     
     func loadMore() {
-        guard !loadingMore, let genre = _selectedGenre, page < movieList?.totalPages ?? 0 else { return }
+        guard !loadingMore,
+              let genre = _selectedGenre,
+              page < _movieList?.totalPages ?? 0,
+              let tableView = _viewController?.movieListView?.movieListTableView,
+              let oldMovieList = self._movieList?.results else { return }
         loadingMore = true
         page += 1
         networkManager?.getMovies(genre: genre, page: page) { [weak self] result in
-            guard let self, let vc = _viewController else { return }
+            guard let self else { return }
             switch result {
             case .success(let movieList):
-                self._movieList?.results.append(contentsOf: movieList.results)
+                var newMovieList = movieList.results
+                newMovieList.removeAll { newMovie in
+                    oldMovieList.contains(where: { oldMovie in
+                        newMovie.id == oldMovie.id
+                    })
+                }
+                guard let searchText, searchText != "" else {
+                    DispatchQueue.main.asyncIfRequired {
+                        tableView.beginUpdates()
+                        for movie in newMovieList {
+                            self._movieList?.addMovie(movie: movie)
+                            guard let position = self._movieList?.results.count else { continue }
+                            tableView.insertRows(at: [IndexPath(row: position, section: 0)], with: .fade)
+                        }
+                        tableView.endUpdates()
+                    }
+                    return
+                }
                 DispatchQueue.main.asyncIfRequired {
-                    vc.movieListView?.movieListTableView.reloadData()
+                    var isItemAdded = false
+                    var filteredOldMovies = oldMovieList.filter { movie in
+                        guard let searchText = self.searchText else { return false }
+                        return movie.title?.lowercased().range(of: searchText) != nil
+                    }
+                    tableView.beginUpdates()
+                    for movie in newMovieList {
+                        self._movieList?.addMovie(movie: movie)
+                        if movie.title?.lowercased().range(of: searchText) != nil {
+                            let position = filteredOldMovies.count
+                            filteredOldMovies.append(movie)
+                            tableView.insertRows(at: [IndexPath(row: position, section: 0)], with: .fade)
+                            isItemAdded = true
+                        }
+                    }
+                    tableView.endUpdates()
+                    if !isItemAdded {
+                        self.loadingMore = false
+                        self.loadMore()
+                    }
                 }
             case .failure(let error):
                 // TODO: Show error

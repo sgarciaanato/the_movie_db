@@ -12,6 +12,7 @@ protocol MovieListDelegate: AnyObject {
     var tableViewDataSource: UITableViewDataSource? { get }
     var categoriesCollectionViewDelegate: UICollectionViewDelegate? { get }
     var categoriesCollectionViewDataSource: UICollectionViewDataSource? { get }
+    var searchText: String? { get set }
     func openWatchList()
 }
 
@@ -25,6 +26,21 @@ final class MovieListView: UIView {
         label.font = UIFont.systemFont(ofSize: 27)
         label.text = "Find your movies"
         return label
+    }()
+    
+    private lazy var searchBarTextField: TextField = {
+        let textField = TextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.backgroundColor = UIColor(named: "LightColor")
+        if let textColor = UIColor(named: "TextColor") {
+            textField.attributedPlaceholder = NSAttributedString(string:"Search Here ...", attributes:[NSAttributedString.Key.foregroundColor: textColor])
+        }
+        textField.textColor = UIColor(named: "TextColor")
+        textField.clipsToBounds = true
+        textField.layer.cornerRadius = 16
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        return textField
     }()
     
     private lazy var categoriesTitleLabel: UILabel = {
@@ -95,6 +111,7 @@ final class MovieListView: UIView {
 private extension MovieListView {
     func configureSearchView() {
         configureSearchDescriptionLabel()
+        configureSearchTextField()
     }
     
     func configureSearchDescriptionLabel() {
@@ -104,6 +121,27 @@ private extension MovieListView {
             searchDescriptionLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 18),
             searchDescriptionLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 29),
             searchDescriptionLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
+        ])
+    }
+    
+    func configureSearchTextField() {
+        addSubview(searchBarTextField)
+        
+        NSLayoutConstraint.activate([
+            searchBarTextField.topAnchor.constraint(equalTo: searchDescriptionLabel.bottomAnchor, constant: 18),
+            searchBarTextField.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 29),
+            searchBarTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -29),
+            searchBarTextField.heightAnchor.constraint(equalToConstant: 42)
+        ])
+    }
+    
+    func configureCategoriesTitle() {
+        addSubview(categoriesTitleLabel)
+        
+        NSLayoutConstraint.activate([
+            categoriesTitleLabel.topAnchor.constraint(equalTo: searchBarTextField.bottomAnchor, constant: 18),
+            categoriesTitleLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 29),
+            categoriesTitleLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
         ])
     }
     
@@ -118,16 +156,6 @@ private extension MovieListView {
             categoriesCollectionView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             categoriesCollectionView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             categoriesCollectionView.heightAnchor.constraint(equalToConstant: 32)
-        ])
-    }
-    
-    func configureCategoriesTitle() {
-        addSubview(categoriesTitleLabel)
-        
-        NSLayoutConstraint.activate([
-            categoriesTitleLabel.topAnchor.constraint(equalTo: searchDescriptionLabel.bottomAnchor, constant: 18),
-            categoriesTitleLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 29),
-            categoriesTitleLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
         ])
     }
     
@@ -165,5 +193,33 @@ private extension MovieListView {
     
     @objc func reloadList(notification: Notification) {
         movieListTableView.reloadData()
+    }
+    
+    @objc func textFieldDidChange(_ textField: UITextField) {
+        delegate?.searchText = textField.text
+    }
+}
+
+extension MovieListView: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchBarTextField.endEditing(true)
+        return false
+    }
+}
+
+fileprivate class TextField: UITextField {
+    
+    let padding = UIEdgeInsets(top: 0, left: 19, bottom: 0, right: 19)
+
+    override open func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
     }
 }

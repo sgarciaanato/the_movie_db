@@ -26,11 +26,23 @@ final class MovieDetailNetworkManager: NetworkManager {
         }
     }
     
-    func getGenres(completionHandler: @escaping (Result<GenreList, MovieListNetworkError>) -> Void) {
-        self.performGet(withEndpoint: Endpoint.genreList.rawValue, parameters: [:]) { data, error in
+    func getMovieDetail(movieID: Int, completionHandler: @escaping (Result<Movie, MovieListNetworkError>) -> Void) {
+        self.performGet(withEndpoint: String(format: Endpoint.movieDetail.rawValue, movieID), parameters: [:]) { data, error in
             do {
-                let genres = try JSONDecoder().decode(GenreList.self, from: data)
-                completionHandler(.success(genres))
+                let movie = try JSONDecoder().decode(Movie.self, from: data)
+                completionHandler(.success(movie))
+            } catch {
+                debugPrint(error)
+                completionHandler(.failure(.errorDecoding))
+            }
+        }
+    }
+    
+    func getReviews(movieID: Int, completionHandler: @escaping (Result<ReviewList, MovieListNetworkError>) -> Void) {
+        self.performGet(withEndpoint: String(format: Endpoint.movieReviews.rawValue, movieID), parameters: [:]) { data, error in
+            do {
+                let reviews = try JSONDecoder().decode(ReviewList.self, from: data)
+                completionHandler(.success(reviews))
             } catch {
                 debugPrint(error)
                 completionHandler(.failure(.errorDecoding))
