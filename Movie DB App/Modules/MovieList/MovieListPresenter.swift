@@ -17,6 +17,7 @@ protocol MovieListPresenter: AnyObject {
     var selectedGenre: Genre? { get set }
     var searchText: String? { get set }
     
+    func viewDidLoad()
     func performAction(_ action: Action)
     func getImageFrom(_ path: String?, imageView: UIImageView)
     func loadMore()
@@ -41,6 +42,7 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
         Genre(id: nil, endpoint: "/3/movie/top_rated", name: "Top Rated"),
         Genre(id: nil, endpoint: "/3/movie/upcoming", name: "Upcoming"),
     ]
+    
     var _selectedGenre: Genre? {
         didSet {
             getMovieList(genre: _selectedGenre)
@@ -69,7 +71,6 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
         self._categoriesCollectionViewDataSource?.presenter = self
         self._categoriesCollectionViewDelegate?.presenter = self
         self._selectedGenre = genres.first
-        getMovieList(genre: self._selectedGenre)
         getGenres()
     }
 }
@@ -122,14 +123,20 @@ extension DefaultMovieListPresenter: MovieListPresenter {
         }
     }
     
+    func viewDidLoad() {
+        getMovieList(genre: self._selectedGenre)
+    }
+    
     func performAction(_ action: Action) {
         coordinator?.performAction(action)
     }
     
     func getMovieList(genre: Genre?) {
-        guard let genre else { return }
+        guard let genre, let tableView = _viewController?.movieListView?.movieListTableView else { return }
+        let indicator = addIndicatorToView(tableView)
         networkManager?.getMovies(genre: genre) { [weak self] result in
-            guard let self, let tableView = _viewController?.movieListView?.movieListTableView else { return }
+            guard let self else { return }
+            removeIndicator(indicator)
             switch result {
             case .success(let movieList):
                 self._movieList = movieList
@@ -254,10 +261,8 @@ private extension DefaultMovieListPresenter {
             activityIndicator.startAnimating()
         }
         NSLayoutConstraint.activate([
-            activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
-            activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
         return activityIndicator
     }

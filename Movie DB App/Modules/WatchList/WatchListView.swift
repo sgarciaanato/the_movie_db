@@ -23,13 +23,27 @@ final class WatchListView: UIView {
         label.textColor = UIColor(named: "TextColor")
         label.font = UIFont.systemFont(ofSize: 27)
         label.text = "Your Watch List"
+        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
     
     lazy var movieListTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.isHidden = WatchList.shared.movies.isEmpty
         return tableView
+    }()
+    
+    lazy var noMoviesLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(named: "TextColor")
+        label.text = "No items on your Watch List"
+        label.font = UIFont.systemFont(ofSize: 30)
+        label.textAlignment = .center
+        label.isHidden = !WatchList.shared.movies.isEmpty
+        label.numberOfLines = 0
+        return label
     }()
     
     lazy var backButton: UIButton = {
@@ -54,6 +68,7 @@ final class WatchListView: UIView {
         backgroundColor = UIColor(named: "BackgroundColor")
         configureWatchListTitleLabel()
         configureMovieList()
+        configureNoMoviesLabel()
         configureBackButton()
         NotificationCenter.default.addObserver(self, selector: #selector(self.reloadList(notification:)), name: Notification.Name.watchListUpdated, object: nil)
     }
@@ -90,10 +105,21 @@ private extension WatchListView {
             movieListTableView.topAnchor.constraint(equalTo: yourWatchlistTitleLabel.bottomAnchor, constant: 18),
             movieListTableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             movieListTableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            movieListTableView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            movieListTableView.bottomAnchor.constraint(equalTo: bottomAnchor),
             movieListTableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
         ])
         movieListTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 21, right: 0)
+    }
+    
+    func configureNoMoviesLabel() {
+        addSubview(noMoviesLabel)
+        
+        NSLayoutConstraint.activate([
+            noMoviesLabel.topAnchor.constraint(equalTo: yourWatchlistTitleLabel.bottomAnchor, constant: 18),
+            noMoviesLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            noMoviesLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            noMoviesLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+        ])
     }
     
     func configureBackButton() {
@@ -112,6 +138,11 @@ private extension WatchListView {
     }
     
     @objc func reloadList(notification: Notification) {
-        movieListTableView.reloadData()
+        DispatchQueue.main.asyncIfRequired { [weak self] in
+            guard let self else { return }
+            self.movieListTableView.isHidden = WatchList.shared.movies.isEmpty
+            self.noMoviesLabel.isHidden = !WatchList.shared.movies.isEmpty
+            self.movieListTableView.reloadData()
+        }
     }
 }

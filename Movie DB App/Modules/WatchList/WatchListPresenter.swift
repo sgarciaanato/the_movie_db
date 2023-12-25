@@ -39,10 +39,6 @@ final class DefaultWatchListPresenter: Presenter, Coordinating {
         self._tableViewDataSource?.presenter = self
     }
 }
-
-private extension DefaultWatchListPresenter {
-}
-
 extension DefaultWatchListPresenter: WatchListPresenter {
     func getImageFrom(_ path: String?, imageView: UIImageView) {
         guard let path else { return }

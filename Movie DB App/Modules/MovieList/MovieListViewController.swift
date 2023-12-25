@@ -21,6 +21,11 @@ final class MovieListViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        presenter?.viewDidLoad()
+    }
+    
     override func loadView() {
         super.loadView()
         movieListView = MovieListView(delegate: self)
