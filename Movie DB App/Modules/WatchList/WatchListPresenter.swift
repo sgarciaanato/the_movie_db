@@ -42,11 +42,9 @@ final class DefaultWatchListPresenter: Presenter, Coordinating {
 extension DefaultWatchListPresenter: WatchListPresenter {
     func getImageFrom(_ path: String?, imageView: UIImageView) {
         guard let path else { return }
-        let indicator = addIndicatorToView(imageView)
-        networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
-            if let self {
-                self.removeIndicator(indicator)
-            }
+        let indicator = imageView.addIndicatorToView()
+        networkManager?.getDataFrom(path, completionHandler: { result in
+            indicator.removeIndicator()
             
             switch result {
             case .success(let data):

@@ -61,10 +61,10 @@ private extension DefaultMovieDetailPresenter {
     }
     
     func getImageFrom(_ path: String, imageView: UIImageView) {
-        let indicator = addIndicatorToView(imageView)
+        let indicator = imageView.addIndicatorToView()
         networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
             if let self {
-                self.removeIndicator(indicator)
+                indicator.removeIndicator()
             }
             
             switch result {
@@ -114,32 +114,6 @@ private extension DefaultMovieDetailPresenter {
             }
         })
     }
-    
-    private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.style = .large
-        activityIndicator.color = UIColor(named: "TextColor")
-        view.addSubview(activityIndicator)
-        DispatchQueue.main.asyncIfRequired {
-            activityIndicator.startAnimating()
-        }
-        NSLayoutConstraint.activate([
-            activityIndicator.topAnchor.constraint(equalTo: view.topAnchor),
-            activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-        return activityIndicator
-    }
-    
-    private func removeIndicator(_ indicator: UIActivityIndicatorView) {
-        DispatchQueue.main.asyncIfRequired {
-            indicator.stopAnimating()
-            indicator.superview?.alpha = 1
-            indicator.removeFromSuperview()
-        }
-    }
 }
 
 extension DefaultMovieDetailPresenter: MovieDetailPresenter {
@@ -164,10 +138,10 @@ extension DefaultMovieDetailPresenter: MovieDetailPresenter {
     
     func getImageFrom(_ path: String?, imageView: UIImageView) {
         guard let path else { return }
-        let indicator = addIndicatorToView(imageView)
+        let indicator = imageView.addIndicatorToView()
         networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
             if let self {
-                self.removeIndicator(indicator)
+                indicator.removeIndicator()
             }
             
             switch result {

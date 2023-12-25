@@ -133,10 +133,10 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     
     func getMovieList(genre: Genre?) {
         guard let genre, let tableView = _viewController?.movieListView?.movieListTableView else { return }
-        let indicator = addIndicatorToView(tableView)
+        let indicator = tableView.addIndicatorToView()
         networkManager?.getMovies(genre: genre) { [weak self] result in
             guard let self else { return }
-            removeIndicator(indicator)
+            indicator.removeIndicator()
             switch result {
             case .success(let movieList):
                 self._movieList = movieList
@@ -153,11 +153,9 @@ extension DefaultMovieListPresenter: MovieListPresenter {
     
     func getImageFrom(_ path: String?, imageView: UIImageView) {
         guard let path else { return }
-        let indicator = addIndicatorToView(imageView)
-        networkManager?.getDataFrom(path, completionHandler: { [weak self] result in
-            if let self {
-                self.removeIndicator(indicator)
-            }
+        let indicator = imageView.addIndicatorToView()
+        networkManager?.getDataFrom(path, completionHandler: { result in
+            indicator.removeIndicator()
             
             switch result {
             case .success(let data):
@@ -193,11 +191,12 @@ extension DefaultMovieListPresenter: MovieListPresenter {
                     DispatchQueue.main.asyncIfRequired {
                         tableView.beginUpdates()
                         for movie in newMovieList {
-                            self._movieList?.addMovie(movie: movie)
                             guard let position = self._movieList?.results.count else { continue }
+                            self._movieList?.addMovie(movie: movie)
                             tableView.insertRows(at: [IndexPath(row: position, section: 0)], with: .fade)
                         }
                         tableView.endUpdates()
+                        self.loadingMore = false
                     }
                     return
                 }
@@ -248,30 +247,6 @@ private extension DefaultMovieListPresenter {
                 // TODO: Show error
                 debugPrint("error -> \(error.localizedDescription)")
             }
-        }
-    }
-    
-    private func addIndicatorToView(_ view: UIView) -> UIActivityIndicatorView {
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.style = .large
-        activityIndicator.color = UIColor(named: "TextColor")
-        view.addSubview(activityIndicator)
-        DispatchQueue.main.asyncIfRequired {
-            activityIndicator.startAnimating()
-        }
-        NSLayoutConstraint.activate([
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        return activityIndicator
-    }
-    
-    private func removeIndicator(_ indicator: UIActivityIndicatorView) {
-        DispatchQueue.main.asyncIfRequired {
-            indicator.stopAnimating()
-            indicator.superview?.alpha = 1
-            indicator.removeFromSuperview()
         }
     }
 }
