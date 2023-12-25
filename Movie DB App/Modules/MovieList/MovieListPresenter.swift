@@ -71,7 +71,6 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
         self._categoriesCollectionViewDataSource?.presenter = self
         self._categoriesCollectionViewDelegate?.presenter = self
         self._selectedGenre = genres.first
-        getGenres()
     }
 }
 
