@@ -174,7 +174,7 @@ extension MovieTableViewCell {
     
     func configureWatchListImageView() {
         contentView.addSubview(movieWatchListImageView)
-        var isInWatchList = WatchList.shared.movies.contains { $0.id == movie.id }
+        let isInWatchList = WatchList.shared.movies.contains { $0.id == movie.id }
         movieWatchListImageView.image = isInWatchList ? UIImage(named: "BookmarkCheck") : UIImage(named: "Bookmark")
         
         NSLayoutConstraint.activate([

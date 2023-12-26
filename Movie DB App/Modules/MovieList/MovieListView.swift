@@ -21,6 +21,11 @@ final class MovieListView: UIView {
     
     lazy var loadingMore = false {
         didSet {
+            
+            DispatchQueue.main.asyncIfRequired { [weak self] in
+                guard let self else { return }
+                loadingMore ? self.loadingMoreIndicator.startAnimating() : self.loadingMoreIndicator.stopAnimating()
+            }
             loadingMoreIndicator.isHidden = !loadingMore
         }
     }
@@ -83,6 +88,7 @@ final class MovieListView: UIView {
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.style = .large
         activityIndicator.color = UIColor(named: "TextColor")
+        activityIndicator.isHidden = true
         return activityIndicator
     }()
     
@@ -192,10 +198,6 @@ private extension MovieListView {
         
         
         addSubview(loadingMoreIndicator)
-        DispatchQueue.main.asyncIfRequired { [weak self] in
-            guard let self else { return }
-            loadingMoreIndicator.startAnimating()
-        }
         NSLayoutConstraint.activate([
             loadingMoreIndicator.centerXAnchor.constraint(equalTo: movieListTableView.centerXAnchor),
             loadingMoreIndicator.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
