@@ -19,6 +19,12 @@ protocol MovieListDelegate: AnyObject {
 final class MovieListView: UIView {
     weak var delegate: MovieListDelegate?
     
+    lazy var loadingMore = false {
+        didSet {
+            loadingMoreIndicator.isHidden = !loadingMore
+        }
+    }
+    
     private lazy var searchDescriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -69,6 +75,15 @@ final class MovieListView: UIView {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
+    }()
+    
+    lazy var loadingMoreIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.style = .large
+        activityIndicator.color = UIColor(named: "TextColor")
+        return activityIndicator
     }()
     
     lazy var openWatchListButton: UIButton = {
@@ -174,6 +189,17 @@ private extension MovieListView {
             movieListTableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor)
         ])
         movieListTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 21, right: 0)
+        
+        
+        addSubview(loadingMoreIndicator)
+        DispatchQueue.main.asyncIfRequired { [weak self] in
+            guard let self else { return }
+            loadingMoreIndicator.startAnimating()
+        }
+        NSLayoutConstraint.activate([
+            loadingMoreIndicator.centerXAnchor.constraint(equalTo: movieListTableView.centerXAnchor),
+            loadingMoreIndicator.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+        ])
     }
     
     func configureWatchListButton() {

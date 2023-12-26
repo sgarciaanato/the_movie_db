@@ -31,7 +31,12 @@ final class DefaultMovieListPresenter: Presenter, Coordinating {
     var _categoriesCollectionViewDelegate: CategoriesCollectionViewDelegate?
     var _categoriesCollectionViewDataSource: CategoriesCollectionViewDataSource?
     var _searchText: String?
-    var loadingMore = false
+    var loadingMore = false {
+        didSet {
+            guard let vc = _viewController else { return }
+            vc.movieListView?.loadingMore = loadingMore
+        }
+    }
     var page: Int = 1
     
     var _movieList: MovieList?
